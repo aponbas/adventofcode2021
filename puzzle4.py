@@ -34,9 +34,7 @@ def get_value(board):
     value = 0
     for row in board:
         for element in row:
-            if element == -1:
-                continue
-            else:
+            if element != -1:
                 value += element
     return value
 
