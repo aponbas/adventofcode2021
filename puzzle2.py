@@ -17,7 +17,7 @@ for move in data:
         depth += length
 
 answer = horizontal * depth
-print(answer)
+print("puzzle 2a: " + str(answer))
 
 # Part 2
 
@@ -37,4 +37,4 @@ for move in data:
         aim += length
 
 answer = horizontal * depth
-print(answer)
+print("puzzle 2b: " + str(answer))
