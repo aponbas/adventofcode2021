@@ -15,12 +15,7 @@ def transpose(data):
 def find_most_common_bit(row):
     zeros = row.count(0)
     ones = row.count(1)
-    if zeros > ones:
-        return 0
-    elif ones > zeros:
-        return 1
-    else:
-        return -1
+    return int(zeros <= ones)
 
 
 # Part 1
@@ -41,39 +36,24 @@ print("puzzle 3a: " + str(power))
 # Part 2
 
 
-def get_oxygen(data, index):
+def get_rate(data, index, xor):
     new_data = []
     transposed_column = transpose(data)[index]
     most_common = find_most_common_bit(transposed_column)
-    if most_common == -1:
-        most_common = 1
     for row in data:
-        if int(row[index]) == most_common:
+        if int(row[index]) == xor ^ most_common:
             new_data.append(row)
     if len(new_data) == 1:
         return new_data
     else:
-        return get_oxygen(new_data, index + 1)
-
-
-def get_CO2(data, index):
-    new_data = []
-    transposed_column = transpose(data)[index]
-    most_common = find_most_common_bit(transposed_column)
-    if most_common == -1:
-        most_common = 1
-    for row in data:
-        if int(row[index]) == 1 - most_common:
-            new_data.append(row)
-    if len(new_data) == 1:
-        return new_data
-    else:
-        return get_CO2(new_data, index + 1)
+        return get_rate(new_data, index + 1, xor)
 
 
 index = 0
-oxygen = get_oxygen(data, index)
-CO2 = get_CO2(data, index)
+oxygen_xor = 0
+CO2_xor = 1
+oxygen = get_rate(data, index, oxygen_xor)
+CO2 = get_rate(data, index, CO2_xor)
 
 oxygen_rate = int(oxygen[0], 2)
 CO2_rate = int(CO2[0], 2)
