@@ -1,62 +1,48 @@
-import math
-
-# pascal_dict = {}
-# cycle = 0
-#
-# max_cycles = math.ceil(last_day/)
-# for day in range(9, 125):
-#     if day % 8 != 0:
-#         continue
-#     cycle += 1
-#     print(day)
-#     n = int(day / 8)
-#     k_list = range(0, n + 1)
-#     pascal = []
-#     for k in k_list:
-#         x = int(math.factorial(n)/(math.factorial(k)*math.factorial(n-k)))
-#         pascal.append(x)
-#         pascal.append(0)
-#     pascal_dict[cycle] = pascal[:-1]
-# print(pascal_dict[6])
+with open("input6.txt", "r") as file:
+    data = file.read().split(",")
+fish = [int(i) for i in data]
 
 
+def counting_offspring(maturity, gestation_period, last_day, fish):
+    # This is day 0, we have 1 fish
+    fish_count = [1]
 
-# with open("input6.txt", "r") as file:
-#     data = file.read().split(",")
-# fishes = [int(i) for i in data]
-new_fish_maturity = 4  # 1 = a new fish requires 1 day before producing offspring
-gestation_period = 1  # 0 = every day a new fish
-last_day = 20
+    # Then starting from the next day
+    final_day = last_day + maturity  # At the end we want to "delay" for fish who are further along their gestation.
+    for day in range(1, final_day):
+        first_index = day-maturity-1
+        second_index = day-gestation_period-1
+        if first_index < 0:
+            new_fish = 1
+        else:
+            new_fish = fish_count[first_index] + fish_count[second_index]
+        fish_count.append(new_fish)
 
-fishes = [new_fish_maturity]
-# This is day 0, we have a fish
-calc_state = [1]
+    # We don't calculate for every fish individually, we just count how many fish of a certain state exist and multiply
+    # by the number of fish one of them would produce.
+    possible_states = set(fish)
+    final_count = 0
+    for initial_state in possible_states:
+        number_of_fish = fish.count(initial_state)  # The number of fish in the input with that initial state
+        offspring = fish_count[final_day - initial_state]  # The total offspring of 1 of those fish
+        final_count += number_of_fish * offspring
+    return final_count
 
-# Then starting from the next day
-for day in range(1, last_day):
-    for i in range(0, len(fishes)):
-        fishes[i] -= 1
-        if fishes[i] == -1:
-            fishes[i] = gestation_period
-            fishes.append(new_fish_maturity)
-    min_state = max(0, day - new_fish_maturity*2)
-    max_state = max(1, day - new_fish_maturity + 1)
 
-    # for ges = 0
-    # min_state = max(0, day - new_fish_maturity*2)
-    # max_state = max(1, day - new_fish_maturity + 1)
-    calc = sum(calc_state[min_state:max_state])
-    calc_state.append(calc)
-    print("day: " + str(day) + ", calc: " + str(calc) + ", should be: " + str(len(fishes)))
-    print(str(min_state) + " " + str(max_state))
-    print(calc_state)
-    print('\n')
-    # print(str(day) + ", " + str(len(fishes)))
+# Part 1
 
-# max_days = 256
-# new_borns = 0
-# for day in range(0, max_days):
-#     for fish in fishes:
-#         new_borns += math.ceil((max_days-day-fish)/7)
-#     print(new_borns)
-#     break
+maturity = 8  # 1 = a new fish requires 1 day before producing offspring.
+gestation_period = 6  # 0 = every day a new fish.
+last_day = 80  # You want to know how many fish there are after this day.
+
+final_count = counting_offspring(maturity, gestation_period, last_day, fish)
+print("puzzle 6a: " + str(final_count))
+
+# Part 2
+
+maturity = 8  # 1 = a new fish requires 1 day before producing offspring.
+gestation_period = 6  # 0 = every day a new fish.
+last_day = 256  # You want to know how many fish there are after this day.
+
+final_count = counting_offspring(maturity, gestation_period, last_day, fish)
+print("puzzle 6b: " + str(final_count))
